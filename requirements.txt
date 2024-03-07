@@ -1,0 +1,6 @@
+langchain
+streamlit
+openai
+python-dotenv
+langchain_google_genai
+unstructured
