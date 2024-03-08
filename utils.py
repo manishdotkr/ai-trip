@@ -1,16 +1,14 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
-# from langchain.tools import Tool
 from langchain_community.utilities import GoogleSearchAPIWrapper
 from langchain_community.document_loaders import UnstructuredURLLoader
 
 load_dotenv()
-
 search = GoogleSearchAPIWrapper()
 
 def main(place , start_date , day_count):
     results = top5_results(place, day_count)
-    titles, urls , snippets = extractinfo(results)
+    urls = extractinfo(results)
     url_data = load(urls)
     response = generate(url_data, start_date, day_count)
     return response
@@ -24,17 +22,13 @@ def top5_results(place, days):
 
 def extractinfo(results):
     print("Extracting information from search results...")
-    titles = []
-    links = []
-    snippets = []
+    urls = []
 
     # Iterate through the data and extract information
     for item in results:
-        titles.append(item["title"])
-        links.append(item["link"])
-        snippets.append(item["snippet"])
+        urls.append(item["link"])
     print("Information extracted successfully.")
-    return titles, links, snippets
+    return urls
 
 def load(urls):
     print("Loading data from URLs...")
