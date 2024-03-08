@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import main
+from utils import *
 
 st.set_page_config(page_title="TRAVEL ITINERARY GUIDE APP")
 st.title("AI Travel Itinerary Guide System 🤖 📑")
@@ -12,6 +12,9 @@ submit_button = st.button("Get started")
  
 if submit_button and day_count and place:
     with st.spinner("Geting best plan for your vacation..."):
-        response = main(place , start_date , day_count)
+        results = top5_results(place, day_count)
+        titles, links, snippets = extractinfo(results)
+        url_data = load(links)
+        response = generate(url_data, start_date, day_count)
         st.write(response)
-        print(response)
+        # print(response)

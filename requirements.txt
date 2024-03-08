@@ -4,3 +4,4 @@ openai
 python-dotenv
 langchain_google_genai
 unstructured
+google-api-python-client>=2.100.0

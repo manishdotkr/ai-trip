@@ -1,6 +1,6 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
-# from langchain.tools import Tool
+from langchain.tools import Tool
 from langchain_community.utilities import GoogleSearchAPIWrapper
 from langchain_community.document_loaders import UnstructuredURLLoader
 
@@ -8,45 +8,39 @@ load_dotenv()
 
 search = GoogleSearchAPIWrapper()
 
-def main(place , start_date , day_count):
-    results = top5_results(place, day_count)
-    titles, urls , snippets = extractinfo(results)
-    url_data = load(urls)
-    response = generate(url_data, start_date, day_count)
-    return response
 
 def top5_results(place, days):
-    query = f"{days} day {place} itinerary for tourists"
+    query = place + " travel itinerary for " + str(days) + " days"
     print("\n\n===========================================\n"+query+"\n===========================================")
-    results = search.results(query, 2)
-    print(f"Top 2 results retrieved successfully. Here are the results: {results}")
-    return results
+    return search.results(query, 2)
 
-def extractinfo(results):
-    print("Extracting information from search results...")
+
+tool = Tool(
+    name="Google Search Snippets",
+    description="Search Google for top results for best travel guide.",
+    func=top5_results,
+)
+
+
+def extractinfo(result):
     titles = []
     links = []
     snippets = []
 
     # Iterate through the data and extract information
-    for item in results:
+    for item in result:
         titles.append(item["title"])
         links.append(item["link"])
         snippets.append(item["snippet"])
-    print("Information extracted successfully.")
     return titles, links, snippets
 
 def load(urls):
-    print("Loading data from URLs...")
-    print(f"urls: {urls}")
     loader = UnstructuredURLLoader(urls=urls)
     data = loader.load()
-    print("Data loaded successfully.")
     return data
 
 
 def generate(data, date, days):
-    print("Initializing Google Generative AI model...")
     llm_g = ChatGoogleGenerativeAI(model="gemini-pro")
     Travel_Itinerary_Guide_Prompt = """
     Task: Generate a personalized travel itinerary based on information retrieved from Google.
@@ -68,9 +62,7 @@ def generate(data, date, days):
     Note: The more details you provide, the more personalized and accurate the itinerary will be.
     """
     prompt = Travel_Itinerary_Guide_Prompt.format(data = data, date= date, day_count = days)
-    print("Generating travel itinerary...")
     response = llm_g.invoke(prompt)
     response = response.content
-    itinerary = response
-    print("Travel itinerary generated successfully.")
-    return itinerary
+    itinery = response
+    return itinery
